@@ -60,9 +60,10 @@ export default async function Page(props: PageProps<"/">) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-brand">Available items</h1>
+        <h1 className="text-2xl font-semibold text-brand">Available Items</h1>
         <p className="mt-1 text-sm text-neutral-600">
-          To buy something, find the seller in the WhatsApp group and arrange the sale there.
+          For security, all purchases must be conducted by contacting the seller from within the
+          Larrie Second-hand Clothing WhatsApp group.
         </p>
       </div>
 
@@ -121,18 +122,17 @@ export default async function Page(props: PageProps<"/">) {
             return (
               <details
                 key={group.itemTypeName}
-                open
-                className="group rounded-lg border border-neutral-200 bg-white"
+                className="group rounded-lg border border-neutral-200 bg-brand/[6%]"
               >
-                <summary className="flex cursor-pointer select-none items-center justify-between px-4 py-3 font-semibold text-brand">
+                <summary className="flex cursor-pointer select-none items-center justify-between px-4 py-3 font-semibold text-brand hover:bg-brand/10">
                   <span>
                     {group.itemTypeName}
                     <span className="ml-2 rounded-full bg-brand-accent px-2 py-0.5 text-xs font-medium text-brand">
                       {total} {total === 1 ? "item" : "items"}
                     </span>
                   </span>
-                  <span className="text-neutral-400 transition-transform group-open:rotate-180">
-                    ▾
+                  <span className="text-base text-neutral-500 transition-transform group-open:rotate-90">
+                    ▶
                   </span>
                 </summary>
 
@@ -140,17 +140,17 @@ export default async function Page(props: PageProps<"/">) {
                   {group.sizes.map((sizeGroup) => (
                     <details
                       key={sizeGroup.size}
-                      className="group/size rounded border border-neutral-200"
+                      className="group/size rounded border border-neutral-200 bg-brand/[3%]"
                     >
-                      <summary className="flex cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-medium text-neutral-700">
+                      <summary className="flex cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-brand/[8%]">
                         <span>
-                          Size {sizeGroup.size}
+                          {sizeGroup.size}
                           <span className="ml-2 text-xs font-normal text-neutral-500">
                             ({sizeGroup.items.length})
                           </span>
                         </span>
-                        <span className="text-neutral-400 transition-transform group-open/size:rotate-180">
-                          ▾
+                        <span className="text-sm text-neutral-500 transition-transform group-open/size:rotate-90">
+                          ▶
                         </span>
                       </summary>
                       <div className="overflow-x-auto border-t border-neutral-200">

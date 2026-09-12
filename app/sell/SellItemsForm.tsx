@@ -21,32 +21,37 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
 
   return (
     <form action={submitItems} className="space-y-6 rounded-lg border border-neutral-200 bg-white p-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm">
-          Your first name
-          <input
-            type="text"
-            name="sellerName"
-            required
-            maxLength={100}
-            className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5"
-          />
-        </label>
+      <div className="max-w-sm space-y-4">
+        <div>
+          <label className="block text-sm">
+            Your first name
+            <input
+              type="text"
+              name="sellerName"
+              required
+              maxLength={100}
+              className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5"
+            />
+          </label>
+          <p className="mt-1 text-xs text-neutral-500">This will be visible on the site.</p>
+        </div>
 
-        <label className="block text-sm">
-          Your phone number
-          <input
-            type="tel"
-            name="sellerPhone"
-            required
-            maxLength={20}
-            className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5"
-          />
-        </label>
+        <div>
+          <label className="block text-sm">
+            Your phone number
+            <input
+              type="tel"
+              name="sellerPhone"
+              required
+              maxLength={20}
+              className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5"
+            />
+          </label>
+          <p className="mt-1 text-xs text-neutral-500">
+            Not shown on the site. Used only so you can find and mark your own items as sold later.
+          </p>
+        </div>
       </div>
-      <p className="text-xs text-neutral-500">
-        Not shown on the site. Used only so you can find and mark your own items as sold later.
-      </p>
 
       <div className="space-y-4">
         {rowIds.map((id, index) => (
