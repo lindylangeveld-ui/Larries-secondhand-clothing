@@ -67,13 +67,13 @@ export default async function Page(props: PageProps<"/">) {
         </p>
       </div>
 
-      <form className="flex flex-wrap gap-4 rounded-lg border border-neutral-200 bg-white p-4">
+      <form className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-4 sm:flex-row sm:flex-wrap sm:items-end">
         <label className="flex flex-col text-sm">
           Item
           <select
             name="itemTypeId"
             defaultValue={itemTypeId ?? ""}
-            className="mt-1 rounded border border-neutral-300 px-2 py-1"
+            className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5 sm:w-auto sm:py-1"
           >
             <option value="">All items</option>
             {itemTypes.map((t) => (
@@ -89,7 +89,7 @@ export default async function Page(props: PageProps<"/">) {
           <select
             name="size"
             defaultValue={size ?? ""}
-            className="mt-1 rounded border border-neutral-300 px-2 py-1"
+            className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5 sm:w-auto sm:py-1"
           >
             <option value="">All sizes</option>
             {sizes.map((s) => (
@@ -100,17 +100,19 @@ export default async function Page(props: PageProps<"/">) {
           </select>
         </label>
 
-        <button
-          type="submit"
-          className="mt-auto rounded bg-brand px-4 py-1.5 text-sm text-white"
-        >
-          Filter
-        </button>
-        {(itemTypeId || size) && (
-          <Link href="/" className="mt-auto text-sm text-neutral-600 underline">
-            Clear filters
-          </Link>
-        )}
+        <div className="flex items-center gap-4">
+          <button
+            type="submit"
+            className="rounded bg-brand px-4 py-1.5 text-sm text-white"
+          >
+            Filter
+          </button>
+          {(itemTypeId || size) && (
+            <Link href="/" className="text-sm text-neutral-600 underline">
+              Clear filters
+            </Link>
+          )}
+        </div>
       </form>
 
       {groups.length === 0 ? (

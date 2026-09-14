@@ -26,19 +26,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-neutral-50 text-neutral-900">
         <header className="border-b-4 border-brand bg-white shadow-[0_4px_0_-2px_var(--brand-accent)]">
-          <nav className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4">
-            <Link href="/" className="flex shrink-0 items-center gap-3">
+          <nav className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 sm:shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/la-rochelle-logo.png"
                 alt="La Rochelle Girls' High School"
-                className="h-12 w-auto"
+                className="h-9 w-auto sm:h-10 md:h-12"
               />
-              <span className="whitespace-nowrap text-3xl font-bold text-brand">
+              <span className="text-lg font-bold text-brand sm:whitespace-nowrap sm:text-2xl md:text-3xl">
                 Larries Second-hand Clothing Store
               </span>
             </Link>
-            <div className="flex shrink-0 gap-4 text-sm">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm sm:shrink-0 sm:flex-nowrap">
               <Link href="/" className="whitespace-nowrap hover:text-brand hover:underline">
                 Browse Items for Sale
               </Link>
