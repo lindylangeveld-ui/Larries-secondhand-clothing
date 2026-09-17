@@ -1,11 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import { submitItems } from "./actions";
 
 interface ItemTypeOption {
   id: string;
   name: string;
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="w-full rounded bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {pending ? "Submitting…" : "Submit for approval"}
+    </button>
+  );
 }
 
 export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption[] }) {
@@ -140,12 +154,7 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
         + Add another item
       </button>
 
-      <button
-        type="submit"
-        className="w-full rounded bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
-      >
-        Submit for approval
-      </button>
+      <SubmitButton />
     </form>
   );
 }
