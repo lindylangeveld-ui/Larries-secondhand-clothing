@@ -62,7 +62,8 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
             />
           </label>
           <p className="mt-1 text-xs text-neutral-500">
-            Not shown on the site. Used only so you can find and mark your own items as sold later.
+            Shown as a WhatsApp contact link once your item is approved, and used so you can
+            manage your own listings later.
           </p>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getSessionEmail, destroySession } from "@/lib/auth";
 import { approveItem, rejectItem, addItemType, toggleItemTypeActive } from "@/lib/items";
+import { setSetting } from "@/lib/settings";
 
 async function requireAdmin() {
   const email = await getSessionEmail();
@@ -38,6 +39,13 @@ export async function toggleType(formData: FormData) {
   if (id) await toggleItemTypeActive(id);
   revalidatePath("/admin");
   revalidatePath("/");
+}
+
+export async function updatePasscode(formData: FormData) {
+  await requireAdmin();
+  const passcode = String(formData.get("passcode") ?? "").trim();
+  if (passcode) await setSetting("site_passcode", passcode);
+  revalidatePath("/admin");
 }
 
 export async function logout() {

@@ -1,5 +1,6 @@
 import { CONDITION_LABELS, getAllItemTypes, getPendingItems } from "@/lib/items";
-import { approve, reject, addType, toggleType } from "./actions";
+import { getSetting } from "@/lib/settings";
+import { approve, reject, addType, toggleType, updatePasscode } from "./actions";
 
 function formatPrice(price: string | null) {
   if (!price) return "—";
@@ -7,10 +8,36 @@ function formatPrice(price: string | null) {
 }
 
 export default async function AdminDashboardPage() {
-  const [pending, itemTypes] = await Promise.all([getPendingItems(), getAllItemTypes()]);
+  const [pending, itemTypes, passcode] = await Promise.all([
+    getPendingItems(),
+    getAllItemTypes(),
+    getSetting("site_passcode"),
+  ]);
 
   return (
     <div className="space-y-10">
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Site access code</h2>
+        <p className="text-sm text-neutral-600">
+          Buyers and sellers need this code to get into the site. Share it in the WhatsApp group.
+        </p>
+        <form action={updatePasscode} className="flex max-w-sm gap-2">
+          <input
+            type="text"
+            name="passcode"
+            required
+            defaultValue={passcode ?? ""}
+            className="flex-1 rounded border border-neutral-300 px-2 py-1.5 text-sm"
+          />
+          <button
+            type="submit"
+            className="rounded bg-neutral-900 px-3 py-1.5 text-sm text-white"
+          >
+            Update
+          </button>
+        </form>
+      </section>
+
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Pending items ({pending.length})</h2>
         {pending.length === 0 ? (

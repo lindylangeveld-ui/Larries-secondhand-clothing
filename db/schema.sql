@@ -41,3 +41,14 @@ insert into item_types (name) values
   ('Dress'),
   ('Shoes')
 on conflict (name) do nothing;
+
+-- Small key/value store for site-wide settings (e.g. the shared access code),
+-- editable from the admin dashboard.
+create table if not exists settings (
+  key        text primary key,
+  value      text not null,
+  updated_at timestamptz not null default now()
+);
+
+insert into settings (key, value) values ('site_passcode', 'changeme')
+on conflict (key) do nothing;

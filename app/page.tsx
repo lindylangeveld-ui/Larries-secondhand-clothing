@@ -12,6 +12,16 @@ function formatPrice(price: string | null) {
   return `R${Number(price).toFixed(2)}`;
 }
 
+function whatsappLink(phone: string): string {
+  const digits = phone.replace(/[^\d+]/g, "");
+  const withCountryCode = digits.startsWith("+")
+    ? digits.slice(1)
+    : digits.startsWith("0")
+      ? `27${digits.slice(1)}`
+      : digits;
+  return `https://wa.me/${withCountryCode}`;
+}
+
 interface SizeGroup {
   size: string;
   items: Item[];
@@ -62,8 +72,7 @@ export default async function Page(props: PageProps<"/">) {
       <div>
         <h1 className="text-2xl font-semibold text-brand">Available Items</h1>
         <p className="mt-1 text-sm text-neutral-600">
-          For security, all purchases must be conducted by contacting the seller from within the
-          Larrie Second-hand Clothing WhatsApp group.
+          Tap &quot;Chat on WhatsApp&quot; to contact a seller directly and arrange the sale.
         </p>
       </div>
 
@@ -156,12 +165,13 @@ export default async function Page(props: PageProps<"/">) {
                         </span>
                       </summary>
                       <div className="overflow-x-auto border-t border-neutral-200">
-                        <table className="w-full min-w-[480px] text-sm">
+                        <table className="w-full min-w-[600px] text-sm">
                           <thead>
                             <tr className="border-b border-neutral-200 text-left text-neutral-600">
                               <th className="px-3 py-2 font-medium">Condition</th>
                               <th className="px-3 py-2 font-medium">Price</th>
                               <th className="px-3 py-2 font-medium">Seller</th>
+                              <th className="px-3 py-2 font-medium"></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -170,6 +180,16 @@ export default async function Page(props: PageProps<"/">) {
                                 <td className="px-3 py-2">{CONDITION_LABELS[item.condition]}</td>
                                 <td className="px-3 py-2">{formatPrice(item.price) ?? "—"}</td>
                                 <td className="px-3 py-2">{item.sellerName}</td>
+                                <td className="px-3 py-2 text-right">
+                                  <a
+                                    href={whatsappLink(item.sellerPhone)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="whitespace-nowrap rounded bg-brand px-2 py-1 text-xs font-medium text-white"
+                                  >
+                                    Chat on WhatsApp
+                                  </a>
+                                </td>
                               </tr>
                             ))}
                           </tbody>
