@@ -10,7 +10,7 @@ const conditionValues = ["unused", "like_new", "fair"] as const;
 
 const sellerSchema = z.object({
   sellerName: z.string().trim().min(1).max(100),
-  sellerPhone: z.string().trim().min(6).max(20),
+  sellerPhone: z.string().trim().min(6).max(20).regex(/^\d+$/),
 });
 
 const itemSchema = z.object({

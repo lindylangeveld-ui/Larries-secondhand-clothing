@@ -57,7 +57,13 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
               type="tel"
               name="sellerPhone"
               required
+              inputMode="numeric"
+              pattern="[0-9]{6,20}"
+              title="Digits only, no spaces or other characters"
               maxLength={20}
+              onChange={(e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              }}
               className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5"
             />
           </label>
