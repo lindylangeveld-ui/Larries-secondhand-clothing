@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createItem, type Condition } from "@/lib/items";
+import { createItems, type Condition } from "@/lib/items";
 import { notifyAdminOfNewSubmissions } from "@/lib/email";
 import { query } from "@/lib/db";
 
@@ -73,18 +73,18 @@ export async function submitItems(formData: FormData) {
 
   const { sellerName, sellerPhone } = seller.data;
 
-  for (const item of items) {
-    await createItem({
+  await createItems(
+    items.map((item) => ({
       itemTypeId: item.itemTypeId,
       size: item.size,
       price: item.price || null,
       sellerName,
       sellerPhone,
       condition: item.condition as Condition,
-    });
-  }
+    }))
+  );
 
-  await notifyAdminOfNewSubmissions({
+  notifyAdminOfNewSubmissions({
     sellerName,
     items: items.map((item) => ({
       itemType: nameByTypeId.get(item.itemTypeId)!,

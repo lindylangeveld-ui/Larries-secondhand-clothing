@@ -117,18 +117,39 @@ export async function getItemsByPhone(phone: string): Promise<Item[]> {
   return rows.map(mapItemRow);
 }
 
-export async function createItem(data: {
+interface NewItem {
   itemTypeId: string;
   size: string;
   price: string | null;
   sellerName: string;
   sellerPhone: string;
   condition: Condition;
-}) {
+}
+
+export async function createItems(items: NewItem[]) {
+  if (items.length === 0) return;
+
+  const values: string[] = [];
+  const params: unknown[] = [];
+  items.forEach((item, i) => {
+    const base = i * 6;
+    values.push(
+      `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6})`
+    );
+    params.push(
+      item.itemTypeId,
+      item.size,
+      item.price,
+      item.sellerName,
+      item.sellerPhone,
+      item.condition
+    );
+  });
+
   await query(
     `insert into items (item_type_id, size, price, seller_name, seller_phone, condition)
-     values ($1, $2, $3, $4, $5, $6)`,
-    [data.itemTypeId, data.size, data.price, data.sellerName, data.sellerPhone, data.condition]
+     values ${values.join(", ")}`,
+    params
   );
 }
 
