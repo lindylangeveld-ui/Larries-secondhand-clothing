@@ -74,22 +74,6 @@ export default async function Page(props: PageProps<"/">) {
         <p className="mt-1 text-base text-neutral-600">
           Tap &quot;Chat on WhatsApp&quot; to contact a seller directly and arrange the sale.
         </p>
-        <p className="mt-3 text-sm text-neutral-600">
-          <span className="font-bold">A note on safety:</span> This site is password-protected,
-          but nothing online is 100% secure, so please stay vigilant when arranging any exchange.
-        </p>
-        <div className="mt-2 space-y-1 text-xs text-neutral-500 italic">
-          <p>
-            This is purely a platform to connect sellers and buyers — we don&apos;t verify
-            listings or users, and all transactions happen directly between members, at their own
-            risk.
-          </p>
-          <p>
-            We take no responsibility for any loss, dispute, damage, or issue arising from items,
-            communication, or exchanges made through this site. By using this site, you agree
-            you&apos;re doing so at your own discretion and risk.
-          </p>
-        </div>
       </div>
 
       <form className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-4 sm:flex-row sm:flex-wrap sm:items-end">
@@ -219,6 +203,25 @@ export default async function Page(props: PageProps<"/">) {
           })}
         </div>
       )}
+
+      <div>
+        <p className="text-sm text-neutral-600">
+          <span className="font-bold">A note on safety:</span> This site is password-protected,
+          but nothing online is 100% secure, so please stay vigilant when arranging any exchange.
+        </p>
+        <div className="mt-2 space-y-1 text-xs text-neutral-500 italic">
+          <p>
+            This is purely a platform to connect sellers and buyers — we don&apos;t verify
+            listings or users, and all transactions happen directly between members, at their own
+            risk.
+          </p>
+          <p>
+            We take no responsibility for any loss, dispute, damage, or issue arising from items,
+            communication, or exchanges made through this site. By using this site, you agree
+            you&apos;re doing so at your own discretion and risk.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
