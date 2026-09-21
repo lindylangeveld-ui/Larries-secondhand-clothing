@@ -17,7 +17,7 @@ function SubmitButton() {
       disabled={pending}
       className="w-full rounded bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {pending ? "Submitting…" : "Submit for approval"}
+      {pending ? "Submitting…" : "Submit"}
     </button>
   );
 }
@@ -68,8 +68,8 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
             />
           </label>
           <p className="mt-1 text-xs text-neutral-500">
-            Shown as a WhatsApp contact link once your item is approved, and used so you can
-            manage your own listings later.
+            Shown as a WhatsApp contact link for buyers to contact you. 
+            Also used for you to manage your own listings later.
           </p>
         </div>
       </div>

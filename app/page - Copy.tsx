@@ -73,9 +73,6 @@ export default async function Page(props: PageProps<"/">) {
         <h1 className="text-2xl font-semibold text-brand">Available Items</h1>
         <p className="mt-1 text-sm text-neutral-600">
           Tap &quot;Chat on WhatsApp&quot; to contact a seller directly and arrange the sale.
-A note on safety: This site is password-protected, but nothing online is 100% secure, so please stay vigilant when arranging any exchange. This is purely a platform to connect sellers and buyers — we don't verify listings or users, and all transactions happen directly between members, at their own risk. We take no responsibility for any loss, dispute, damage, or issue arising from items, communication, or exchanges made through this site.
-
-By using this site, you agree you're doing so at your own discretion and risk.
         </p>
       </div>
 

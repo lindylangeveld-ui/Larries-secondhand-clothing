@@ -11,7 +11,7 @@ export default async function SellPage(props: PageProps<"/sell">) {
       <div>
         <h1 className="text-2xl font-semibold">Sell items</h1>
         <p className="mt-1 text-sm text-neutral-600">
-          Add one or more items below. An admin will review them before they appear on the site.
+          Add one or multiple items below. Note they will not appear for sale immediately. Once an admin has approved them, they will be loaded.
         </p>
       </div>
 
