@@ -115,6 +115,7 @@ export default async function AdminDashboardPage() {
                     <form action={updateCategory} className="flex items-center gap-2">
                       <input type="hidden" name="id" value={t.id} />
                       <select
+                        key={t.category}
                         name="category"
                         defaultValue={t.category}
                         className="rounded border border-neutral-300 px-2 py-1 text-xs"
