@@ -1,9 +1,12 @@
 import Link from "next/link";
 import {
+  CATEGORIES,
+  CATEGORY_LABELS,
   CONDITION_LABELS,
   getActiveItemTypes,
   getApprovedItems,
   getDistinctApprovedSizes,
+  type Category,
   type Item,
 } from "@/lib/items";
 
@@ -58,11 +61,15 @@ export default async function Page(props: PageProps<"/">) {
   const searchParams = await props.searchParams;
   const itemTypeId = typeof searchParams.itemTypeId === "string" ? searchParams.itemTypeId : undefined;
   const size = typeof searchParams.size === "string" ? searchParams.size : undefined;
+  const category =
+    typeof searchParams.category === "string" && CATEGORIES.includes(searchParams.category as Category)
+      ? (searchParams.category as Category)
+      : undefined;
 
   const [itemTypes, sizes, items] = await Promise.all([
     getActiveItemTypes(),
     getDistinctApprovedSizes(),
-    getApprovedItems({ itemTypeId, size }),
+    getApprovedItems({ itemTypeId, size, category }),
   ]);
 
   const groups = groupItems(items);
@@ -109,6 +116,22 @@ export default async function Page(props: PageProps<"/">) {
           </select>
         </label>
 
+        <label className="flex flex-col text-sm">
+          Category
+          <select
+            name="category"
+            defaultValue={category ?? ""}
+            className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5 sm:w-auto sm:py-1"
+          >
+            <option value="">All categories</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {CATEGORY_LABELS[c]}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <div className="flex items-center gap-4">
           <button
             type="submit"
@@ -116,7 +139,7 @@ export default async function Page(props: PageProps<"/">) {
           >
             Filter
           </button>
-          {(itemTypeId || size) && (
+          {(itemTypeId || size || category) && (
             <Link href="/" className="text-sm text-neutral-600 underline">
               Clear filters
             </Link>
@@ -142,7 +165,7 @@ export default async function Page(props: PageProps<"/">) {
                       {total} {total === 1 ? "item" : "items"}
                     </span>
                   </span>
-                  <span className="text-base text-neutral-500 transition-transform group-open:rotate-90">
+                  <span className="text-xs text-neutral-500 transition-transform group-open:rotate-90">
                     ▶
                   </span>
                 </summary>
@@ -160,14 +183,15 @@ export default async function Page(props: PageProps<"/">) {
                             ({sizeGroup.items.length})
                           </span>
                         </span>
-                        <span className="text-sm text-neutral-500 transition-transform group-open/size:rotate-90">
+                        <span className="text-[0.65rem] text-neutral-500 transition-transform group-open/size:rotate-90">
                           ▶
                         </span>
                       </summary>
                       <div className="overflow-x-auto border-t border-neutral-200">
-                        <table className="w-full min-w-[600px] text-sm">
+                        <table className="w-full min-w-[640px] text-sm">
                           <thead>
                             <tr className="border-b border-neutral-200 text-left text-neutral-600">
+                              <th className="px-3 py-2 font-medium">Category</th>
                               <th className="px-3 py-2 font-medium">Condition</th>
                               <th className="px-3 py-2 font-medium">Price</th>
                               <th className="px-3 py-2 font-medium">Seller</th>
@@ -177,6 +201,7 @@ export default async function Page(props: PageProps<"/">) {
                           <tbody>
                             {sizeGroup.items.map((item) => (
                               <tr key={item.id} className="border-b border-neutral-100 last:border-0">
+                                <td className="px-3 py-2">{CATEGORY_LABELS[item.category]}</td>
                                 <td className="px-3 py-2">{CONDITION_LABELS[item.condition]}</td>
                                 <td className="px-3 py-2">{formatPrice(item.price) ?? "—"}</td>
                                 <td className="px-3 py-2">{item.sellerName}</td>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import NavLinks from "./NavLinks";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -38,17 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 Larries Second-hand Clothing Store
               </span>
             </Link>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm sm:shrink-0 sm:flex-nowrap">
-              <Link href="/" className="whitespace-nowrap hover:text-brand hover:underline">
-                Browse Items for Sale
-              </Link>
-              <Link href="/sell" className="whitespace-nowrap hover:text-brand hover:underline">
-                Sell an item
-              </Link>
-              <Link href="/my-items" className="whitespace-nowrap hover:text-brand hover:underline">
-                My items
-              </Link>
-            </div>
+            <NavLinks />
           </nav>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>

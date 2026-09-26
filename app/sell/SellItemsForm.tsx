@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { submitItems } from "./actions";
+import { CATEGORIES, CATEGORY_LABELS } from "@/lib/categories";
 
 interface ItemTypeOption {
   id: string;
@@ -24,6 +25,7 @@ function SubmitButton() {
 
 export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption[] }) {
   const [rowIds, setRowIds] = useState<number[]>([0]);
+  const [showValidationError, setShowValidationError] = useState(false);
 
   function addRow() {
     setRowIds((ids) => [...ids, Math.max(...ids) + 1]);
@@ -33,8 +35,37 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
     setRowIds((ids) => (ids.length > 1 ? ids.filter((rowId) => rowId !== id) : ids));
   }
 
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const form = e.currentTarget;
+
+    const phoneInput = form.elements.namedItem("sellerPhone");
+    if (phoneInput instanceof HTMLInputElement) {
+      phoneInput.value = phoneInput.value.replace(/\D/g, "");
+    }
+
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      setShowValidationError(true);
+      form.reportValidity();
+      return;
+    }
+
+    setShowValidationError(false);
+  }
+
   return (
-    <form action={submitItems} className="space-y-6 rounded-lg border border-neutral-200 bg-white p-6">
+    <form
+      noValidate
+      onSubmit={handleSubmit}
+      action={submitItems}
+      className="space-y-6 rounded-lg border border-neutral-200 bg-white p-6"
+    >
+      {showValidationError && (
+        <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">
+          Please check the form — something wasn&apos;t filled in correctly.
+        </p>
+      )}
+
       <div className="max-w-sm space-y-4">
         <div>
           <label className="block text-sm">
@@ -61,6 +92,7 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
               pattern="[0-9]{6,20}"
               title="Digits only, no spaces or other characters"
               maxLength={20}
+              autoComplete="off"
               onChange={(e) => {
                 e.target.value = e.target.value.replace(/\D/g, "");
               }}
@@ -68,7 +100,7 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
             />
           </label>
           <p className="mt-1 text-xs text-neutral-500">
-            Shown as a WhatsApp contact link for buyers to contact you. 
+            Shown as a WhatsApp contact link for buyers to contact you.
             Also used for you to manage your own listings later.
           </p>
         </div>
@@ -104,6 +136,25 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
                 {itemTypes.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block text-sm">
+              Category
+              <select
+                name="category"
+                required
+                defaultValue=""
+                className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5"
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {CATEGORY_LABELS[c]}
                   </option>
                 ))}
               </select>

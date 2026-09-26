@@ -1,4 +1,4 @@
-import { CONDITION_LABELS, getAllItemTypes, getPendingItems } from "@/lib/items";
+import { CATEGORY_LABELS, CONDITION_LABELS, getAllItemTypes, getPendingItems } from "@/lib/items";
 import { getSetting } from "@/lib/settings";
 import { approve, reject, addType, toggleType, updatePasscode } from "./actions";
 
@@ -44,10 +44,11 @@ export default async function AdminDashboardPage() {
           <p className="text-sm text-neutral-600">Nothing waiting for review.</p>
         ) : (
           <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-            <table className="w-full min-w-[720px] text-sm">
+            <table className="w-full min-w-[800px] text-sm">
               <thead>
                 <tr className="border-b border-neutral-200 text-left text-neutral-600">
                   <th className="px-3 py-2 font-medium">Item</th>
+                  <th className="px-3 py-2 font-medium">Category</th>
                   <th className="px-3 py-2 font-medium">Size</th>
                   <th className="px-3 py-2 font-medium">Condition</th>
                   <th className="px-3 py-2 font-medium">Price</th>
@@ -60,6 +61,7 @@ export default async function AdminDashboardPage() {
                 {pending.map((item) => (
                   <tr key={item.id} className="border-b border-neutral-100 last:border-0">
                     <td className="px-3 py-2">{item.itemTypeName}</td>
+                    <td className="px-3 py-2">{CATEGORY_LABELS[item.category]}</td>
                     <td className="px-3 py-2">{item.size}</td>
                     <td className="px-3 py-2">{CONDITION_LABELS[item.condition]}</td>
                     <td className="px-3 py-2">{formatPrice(item.price)}</td>

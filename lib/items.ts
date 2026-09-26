@@ -1,4 +1,8 @@
 import { query } from "@/lib/db";
+import type { Category } from "@/lib/categories";
+
+export type { Category } from "@/lib/categories";
+export { CATEGORY_LABELS, CATEGORIES } from "@/lib/categories";
 
 export type Condition = "unused" | "like_new" | "fair";
 export type ItemStatus = "pending" | "approved" | "sold";
@@ -24,6 +28,7 @@ export interface Item {
   sellerName: string;
   sellerPhone: string;
   condition: Condition;
+  category: Category;
   status: ItemStatus;
   createdAt: Date;
 }
@@ -38,6 +43,7 @@ function mapItemRow(row: Record<string, unknown>): Item {
     sellerName: row.seller_name as string,
     sellerPhone: row.seller_phone as string,
     condition: row.condition as Condition,
+    category: row.category as Category,
     status: row.status as ItemStatus,
     createdAt: row.created_at as Date,
   };
@@ -67,6 +73,7 @@ export async function getDistinctApprovedSizes(): Promise<string[]> {
 export async function getApprovedItems(filters: {
   itemTypeId?: string;
   size?: string;
+  category?: Category;
 }): Promise<Item[]> {
   const conditions = [`i.status = 'approved'`];
   const params: unknown[] = [];
@@ -79,10 +86,14 @@ export async function getApprovedItems(filters: {
     params.push(filters.size);
     conditions.push(`i.size = $${params.length}`);
   }
+  if (filters.category) {
+    params.push(filters.category);
+    conditions.push(`i.category = $${params.length}`);
+  }
 
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, i.category, i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where ${conditions.join(" and ")}
@@ -95,7 +106,7 @@ export async function getApprovedItems(filters: {
 export async function getPendingItems(): Promise<Item[]> {
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, i.category, i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where i.status = 'pending'
@@ -107,7 +118,7 @@ export async function getPendingItems(): Promise<Item[]> {
 export async function getItemsByPhone(phone: string): Promise<Item[]> {
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, i.category, i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where i.seller_phone = $1 and i.status <> 'sold'
@@ -124,6 +135,7 @@ interface NewItem {
   sellerName: string;
   sellerPhone: string;
   condition: Condition;
+  category: Category;
 }
 
 export async function createItems(items: NewItem[]) {
@@ -132,9 +144,9 @@ export async function createItems(items: NewItem[]) {
   const values: string[] = [];
   const params: unknown[] = [];
   items.forEach((item, i) => {
-    const base = i * 6;
+    const base = i * 7;
     values.push(
-      `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6})`
+      `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7})`
     );
     params.push(
       item.itemTypeId,
@@ -142,12 +154,13 @@ export async function createItems(items: NewItem[]) {
       item.price,
       item.sellerName,
       item.sellerPhone,
-      item.condition
+      item.condition,
+      item.category
     );
   });
 
   await query(
-    `insert into items (item_type_id, size, price, seller_name, seller_phone, condition)
+    `insert into items (item_type_id, size, price, seller_name, seller_phone, condition, category)
      values ${values.join(", ")}`,
     params
   );

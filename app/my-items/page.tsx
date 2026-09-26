@@ -1,4 +1,4 @@
-import { CONDITION_LABELS, getItemsByPhone } from "@/lib/items";
+import { CATEGORY_LABELS, CONDITION_LABELS, getItemsByPhone } from "@/lib/items";
 import { markSold } from "./actions";
 
 function formatPrice(price: string | null) {
@@ -49,10 +49,11 @@ export default async function MyItemsPage(props: PageProps<"/my-items">) {
 
       {items.length > 0 && (
         <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-          <table className="w-full min-w-[560px] text-sm">
+          <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b border-neutral-200 text-left text-neutral-600">
                 <th className="px-3 py-2 font-medium">Item</th>
+                <th className="px-3 py-2 font-medium">Category</th>
                 <th className="px-3 py-2 font-medium">Size</th>
                 <th className="px-3 py-2 font-medium">Condition</th>
                 <th className="px-3 py-2 font-medium">Price</th>
@@ -64,6 +65,7 @@ export default async function MyItemsPage(props: PageProps<"/my-items">) {
               {items.map((item) => (
                 <tr key={item.id} className="border-b border-neutral-100 last:border-0">
                   <td className="px-3 py-2">{item.itemTypeName}</td>
+                  <td className="px-3 py-2">{CATEGORY_LABELS[item.category]}</td>
                   <td className="px-3 py-2">{item.size}</td>
                   <td className="px-3 py-2">{CONDITION_LABELS[item.condition]}</td>
                   <td className="px-3 py-2">{formatPrice(item.price)}</td>
@@ -76,7 +78,7 @@ export default async function MyItemsPage(props: PageProps<"/my-items">) {
                         type="submit"
                         className="rounded border border-neutral-300 px-2 py-1 text-xs hover:bg-neutral-50"
                       >
-                        Mark as sold
+                        Remove Item
                       </button>
                     </form>
                   </td>
