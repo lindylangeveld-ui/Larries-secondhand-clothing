@@ -3,8 +3,19 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getSessionEmail, destroySession } from "@/lib/auth";
-import { approveItem, rejectItem, addItemType, toggleItemTypeActive } from "@/lib/items";
+import {
+  approveItem,
+  rejectItem,
+  addItemType,
+  toggleItemTypeActive,
+  setItemTypeCategory,
+} from "@/lib/items";
+import { CATEGORIES, type Category } from "@/lib/categories";
 import { setSetting } from "@/lib/settings";
+
+function parseCategory(value: FormDataEntryValue | null): Category | null {
+  return CATEGORIES.includes(value as Category) ? (value as Category) : null;
+}
 
 async function requireAdmin() {
   const email = await getSessionEmail();
@@ -29,7 +40,8 @@ export async function reject(formData: FormData) {
 export async function addType(formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") ?? "").trim();
-  if (name) await addItemType(name);
+  const category = parseCategory(formData.get("category")) ?? "uniform";
+  if (name) await addItemType(name, category);
   revalidatePath("/admin");
 }
 
@@ -37,6 +49,15 @@ export async function toggleType(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   if (id) await toggleItemTypeActive(id);
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
+
+export async function updateCategory(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const category = parseCategory(formData.get("category"));
+  if (id && category) await setItemTypeCategory(id, category);
   revalidatePath("/admin");
   revalidatePath("/");
 }

@@ -2,12 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createItems, CATEGORIES, type Condition, type Category } from "@/lib/items";
+import { createItems, type Condition } from "@/lib/items";
 import { notifyAdminOfNewSubmissions } from "@/lib/email";
 import { query } from "@/lib/db";
 
 const conditionValues = ["unused", "like_new", "fair"] as const;
-const categoryValues = CATEGORIES as [Category, ...Category[]];
 
 const sellerSchema = z.object({
   sellerName: z.string().trim().min(1).max(100),
@@ -24,7 +23,6 @@ const itemSchema = z.object({
     .optional()
     .or(z.literal("")),
   condition: z.enum(conditionValues),
-  category: z.enum(categoryValues),
 });
 
 export async function submitItems(formData: FormData) {
@@ -40,14 +38,12 @@ export async function submitItems(formData: FormData) {
   const sizes = formData.getAll("size");
   const prices = formData.getAll("price");
   const conditions = formData.getAll("condition");
-  const categories = formData.getAll("category");
 
   if (
     itemTypeIds.length === 0 ||
     itemTypeIds.length !== sizes.length ||
     itemTypeIds.length !== prices.length ||
-    itemTypeIds.length !== conditions.length ||
-    itemTypeIds.length !== categories.length
+    itemTypeIds.length !== conditions.length
   ) {
     redirect("/sell?error=1");
   }
@@ -58,7 +54,6 @@ export async function submitItems(formData: FormData) {
       size: sizes[index],
       price: prices[index],
       condition: conditions[index],
-      category: categories[index],
     });
     if (!parsed.success) {
       redirect("/sell?error=1");
@@ -86,7 +81,6 @@ export async function submitItems(formData: FormData) {
       sellerName,
       sellerPhone,
       condition: item.condition as Condition,
-      category: item.category,
     }))
   );
 

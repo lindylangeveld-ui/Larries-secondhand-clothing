@@ -1,6 +1,6 @@
-import { CATEGORY_LABELS, CONDITION_LABELS, getAllItemTypes, getPendingItems } from "@/lib/items";
+import { CATEGORIES, CATEGORY_LABELS, CONDITION_LABELS, getAllItemTypes, getPendingItems } from "@/lib/items";
 import { getSetting } from "@/lib/settings";
-import { approve, reject, addType, toggleType, updatePasscode } from "./actions";
+import { approve, reject, addType, toggleType, updateCategory, updatePasscode } from "./actions";
 
 function formatPrice(price: string | null) {
   if (!price) return "—";
@@ -98,10 +98,11 @@ export default async function AdminDashboardPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Item types</h2>
         <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-          <table className="w-full min-w-[360px] text-sm">
+          <table className="w-full min-w-[480px] text-sm">
             <thead>
               <tr className="border-b border-neutral-200 text-left text-neutral-600">
                 <th className="px-3 py-2 font-medium">Name</th>
+                <th className="px-3 py-2 font-medium">Category</th>
                 <th className="px-3 py-2 font-medium">Status</th>
                 <th className="px-3 py-2 font-medium"></th>
               </tr>
@@ -110,6 +111,28 @@ export default async function AdminDashboardPage() {
               {itemTypes.map((t) => (
                 <tr key={t.id} className="border-b border-neutral-100 last:border-0">
                   <td className="px-3 py-2">{t.name}</td>
+                  <td className="px-3 py-2">
+                    <form action={updateCategory} className="flex items-center gap-2">
+                      <input type="hidden" name="id" value={t.id} />
+                      <select
+                        name="category"
+                        defaultValue={t.category}
+                        className="rounded border border-neutral-300 px-2 py-1 text-xs"
+                      >
+                        {CATEGORIES.map((c) => (
+                          <option key={c} value={c}>
+                            {CATEGORY_LABELS[c]}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="submit"
+                        className="rounded border border-neutral-300 px-2 py-1 text-xs hover:bg-neutral-50"
+                      >
+                        Save
+                      </button>
+                    </form>
+                  </td>
                   <td className="px-3 py-2">{t.active ? "Active" : "Inactive"}</td>
                   <td className="px-3 py-2 text-right">
                     <form action={toggleType}>
@@ -128,7 +151,7 @@ export default async function AdminDashboardPage() {
           </table>
         </div>
 
-        <form action={addType} className="flex max-w-sm gap-2">
+        <form action={addType} className="flex max-w-lg gap-2">
           <input
             type="text"
             name="name"
@@ -136,6 +159,17 @@ export default async function AdminDashboardPage() {
             placeholder="New item type name"
             className="flex-1 rounded border border-neutral-300 px-2 py-1.5 text-sm"
           />
+          <select
+            name="category"
+            defaultValue="uniform"
+            className="rounded border border-neutral-300 px-2 py-1.5 text-sm"
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {CATEGORY_LABELS[c]}
+              </option>
+            ))}
+          </select>
           <button
             type="submit"
             className="rounded bg-neutral-900 px-3 py-1.5 text-sm text-white"

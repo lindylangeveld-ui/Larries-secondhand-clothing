@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { submitItems } from "./actions";
-import { CATEGORIES, CATEGORY_LABELS } from "@/lib/categories";
 
 interface ItemTypeOption {
   id: string;
@@ -136,25 +135,6 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
                 {itemTypes.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block text-sm">
-              Category
-              <select
-                name="category"
-                required
-                defaultValue=""
-                className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5"
-              >
-                <option value="" disabled>
-                  Select a category
-                </option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {CATEGORY_LABELS[c]}
                   </option>
                 ))}
               </select>

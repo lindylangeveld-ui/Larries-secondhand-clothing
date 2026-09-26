@@ -3,16 +3,18 @@
 
 create extension if not exists pgcrypto;
 
+create type item_category as enum ('sports', 'uniform', 'accessories');
+
 create table if not exists item_types (
   id         uuid primary key default gen_random_uuid(),
   name       text not null unique,
+  category   item_category not null default 'uniform',
   active     boolean not null default true,
   created_at timestamptz not null default now()
 );
 
 create type condition as enum ('unused', 'like_new', 'fair');
 create type item_status as enum ('pending', 'approved', 'sold');
-create type item_category as enum ('sports', 'uniform', 'accessories');
 
 create table if not exists items (
   id            uuid primary key default gen_random_uuid(),
@@ -22,7 +24,6 @@ create table if not exists items (
   seller_name   text not null,
   seller_phone  text not null,
   condition     condition not null,
-  category      item_category not null default 'uniform',
   status        item_status not null default 'pending',
   created_at    timestamptz not null default now(),
   approved_at   timestamptz,

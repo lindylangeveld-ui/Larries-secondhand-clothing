@@ -16,6 +16,7 @@ export const CONDITION_LABELS: Record<Condition, string> = {
 export interface ItemType {
   id: string;
   name: string;
+  category: Category;
   active: boolean;
 }
 
@@ -49,18 +50,27 @@ function mapItemRow(row: Record<string, unknown>): Item {
   };
 }
 
+function mapItemTypeRow(row: Record<string, unknown>): ItemType {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    category: row.category as Category,
+    active: row.active as boolean,
+  };
+}
+
 export async function getActiveItemTypes(): Promise<ItemType[]> {
   const { rows } = await query(
-    `select id, name, active from item_types where active = true order by name`
+    `select id, name, category, active from item_types where active = true order by name`
   );
-  return rows.map((r) => ({ id: r.id as string, name: r.name as string, active: r.active as boolean }));
+  return rows.map(mapItemTypeRow);
 }
 
 export async function getAllItemTypes(): Promise<ItemType[]> {
   const { rows } = await query(
-    `select id, name, active from item_types order by name`
+    `select id, name, category, active from item_types order by name`
   );
-  return rows.map((r) => ({ id: r.id as string, name: r.name as string, active: r.active as boolean }));
+  return rows.map(mapItemTypeRow);
 }
 
 export async function getDistinctApprovedSizes(): Promise<string[]> {
@@ -88,12 +98,12 @@ export async function getApprovedItems(filters: {
   }
   if (filters.category) {
     params.push(filters.category);
-    conditions.push(`i.category = $${params.length}`);
+    conditions.push(`it.category = $${params.length}`);
   }
 
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, i.category, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, it.category, i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where ${conditions.join(" and ")}
@@ -106,7 +116,7 @@ export async function getApprovedItems(filters: {
 export async function getPendingItems(): Promise<Item[]> {
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, i.category, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, it.category, i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where i.status = 'pending'
@@ -118,7 +128,7 @@ export async function getPendingItems(): Promise<Item[]> {
 export async function getItemsByPhone(phone: string): Promise<Item[]> {
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, i.category, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, it.category, i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where i.seller_phone = $1 and i.status <> 'sold'
@@ -135,7 +145,6 @@ interface NewItem {
   sellerName: string;
   sellerPhone: string;
   condition: Condition;
-  category: Category;
 }
 
 export async function createItems(items: NewItem[]) {
@@ -144,9 +153,9 @@ export async function createItems(items: NewItem[]) {
   const values: string[] = [];
   const params: unknown[] = [];
   items.forEach((item, i) => {
-    const base = i * 7;
+    const base = i * 6;
     values.push(
-      `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7})`
+      `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6})`
     );
     params.push(
       item.itemTypeId,
@@ -154,13 +163,12 @@ export async function createItems(items: NewItem[]) {
       item.price,
       item.sellerName,
       item.sellerPhone,
-      item.condition,
-      item.category
+      item.condition
     );
   });
 
   await query(
-    `insert into items (item_type_id, size, price, seller_name, seller_phone, condition, category)
+    `insert into items (item_type_id, size, price, seller_name, seller_phone, condition)
      values ${values.join(", ")}`,
     params
   );
@@ -186,13 +194,18 @@ export async function markItemSold(id: string, phone: string): Promise<boolean> 
   return (rowCount ?? 0) > 0;
 }
 
-export async function addItemType(name: string) {
+export async function addItemType(name: string, category: Category) {
   await query(
-    `insert into item_types (name) values ($1) on conflict (name) do update set active = true`,
-    [name]
+    `insert into item_types (name, category) values ($1, $2)
+     on conflict (name) do update set active = true, category = excluded.category`,
+    [name, category]
   );
 }
 
 export async function toggleItemTypeActive(id: string) {
   await query(`update item_types set active = not active where id = $1`, [id]);
+}
+
+export async function setItemTypeCategory(id: string, category: Category) {
+  await query(`update item_types set category = $2 where id = $1`, [id, category]);
 }
