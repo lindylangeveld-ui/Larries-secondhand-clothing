@@ -11,7 +11,6 @@ import {
   setItemTypeCategory,
 } from "@/lib/items";
 import { CATEGORIES, type Category } from "@/lib/categories";
-import { setSetting } from "@/lib/settings";
 
 function parseCategory(value: FormDataEntryValue | null): Category | null {
   return CATEGORIES.includes(value as Category) ? (value as Category) : null;
@@ -60,13 +59,6 @@ export async function updateCategory(formData: FormData) {
   if (id && category) await setItemTypeCategory(id, category);
   revalidatePath("/admin");
   revalidatePath("/");
-}
-
-export async function updatePasscode(formData: FormData) {
-  await requireAdmin();
-  const passcode = String(formData.get("passcode") ?? "").trim();
-  if (passcode) await setSetting("site_passcode", passcode);
-  revalidatePath("/admin");
 }
 
 export async function logout() {

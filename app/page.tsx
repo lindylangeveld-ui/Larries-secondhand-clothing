@@ -188,10 +188,9 @@ export default async function Page(props: PageProps<"/">) {
                         </span>
                       </summary>
                       <div className="overflow-x-auto border-t border-neutral-200">
-                        <table className="w-full min-w-[640px] text-sm">
+                        <table className="w-full min-w-[600px] text-sm">
                           <thead>
                             <tr className="border-b border-neutral-200 text-left text-neutral-600">
-                              <th className="px-3 py-2 font-medium">Category</th>
                               <th className="px-3 py-2 font-medium">Condition</th>
                               <th className="px-3 py-2 font-medium">Price</th>
                               <th className="px-3 py-2 font-medium">Seller</th>
@@ -201,7 +200,6 @@ export default async function Page(props: PageProps<"/">) {
                           <tbody>
                             {sizeGroup.items.map((item) => (
                               <tr key={item.id} className="border-b border-neutral-100 last:border-0">
-                                <td className="px-3 py-2">{CATEGORY_LABELS[item.category]}</td>
                                 <td className="px-3 py-2">{CONDITION_LABELS[item.condition]}</td>
                                 <td className="px-3 py-2">{formatPrice(item.price) ?? "—"}</td>
                                 <td className="px-3 py-2">{item.sellerName}</td>
@@ -231,8 +229,8 @@ export default async function Page(props: PageProps<"/">) {
 
       <div>
         <p className="text-sm text-neutral-600">
-          <span className="font-bold">A note on safety:</span> This site is password-protected,
-          but nothing online is 100% secure, so please stay vigilant when arranging any exchange.
+          <span className="font-bold">A note on safety:</span> Nothing online is 100% secure, so
+          please stay vigilant when arranging any exchange. We recommend verifying that the buyer/seller is part of the 'Larries Skool/Sport Klere Koop & Verkoop' WhatsApp group.
         </p>
         <div className="mt-2 space-y-1 text-xs text-neutral-500 italic">
           <p>
