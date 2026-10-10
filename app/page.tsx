@@ -3,11 +3,14 @@ import {
   CATEGORIES,
   CATEGORY_LABELS,
   CONDITION_LABELS,
+  SCHOOL_LEVELS,
+  SCHOOL_LEVEL_LABELS,
   getActiveItemTypes,
   getApprovedItems,
   getDistinctApprovedSizes,
   type Category,
   type Item,
+  type SchoolLevel,
 } from "@/lib/items";
 
 function formatPrice(price: string | null) {
@@ -65,11 +68,16 @@ export default async function Page(props: PageProps<"/">) {
     typeof searchParams.category === "string" && CATEGORIES.includes(searchParams.category as Category)
       ? (searchParams.category as Category)
       : undefined;
+  const schoolLevel =
+    typeof searchParams.schoolLevel === "string" &&
+    SCHOOL_LEVELS.includes(searchParams.schoolLevel as SchoolLevel)
+      ? (searchParams.schoolLevel as SchoolLevel)
+      : undefined;
 
   const [itemTypes, sizes, items] = await Promise.all([
     getActiveItemTypes(),
     getDistinctApprovedSizes(),
-    getApprovedItems({ itemTypeId, size, category }),
+    getApprovedItems({ itemTypeId, size, category, schoolLevel }),
   ]);
 
   const groups = groupItems(items);
@@ -79,7 +87,7 @@ export default async function Page(props: PageProps<"/">) {
       <div>
         <h1 className="text-2xl font-semibold text-brand">Available Items</h1>
         <p className="mt-1 text-base text-neutral-600">
-          Tap &quot;Chat on WhatsApp&quot; to contact a seller directly and arrange the sale.
+          Tap a seller&apos;s name to chat with them on WhatsApp and arrange the sale.
         </p>
       </div>
 
@@ -132,6 +140,22 @@ export default async function Page(props: PageProps<"/">) {
           </select>
         </label>
 
+        <label className="flex flex-col text-sm">
+          School
+          <select
+            name="schoolLevel"
+            defaultValue={schoolLevel ?? ""}
+            className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5 sm:w-auto sm:py-1"
+          >
+            <option value="">All schools</option>
+            {SCHOOL_LEVELS.map((level) => (
+              <option key={level} value={level}>
+                {SCHOOL_LEVEL_LABELS[level]}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <div className="flex items-center gap-4">
           <button
             type="submit"
@@ -139,7 +163,7 @@ export default async function Page(props: PageProps<"/">) {
           >
             Filter
           </button>
-          {(itemTypeId || size || category) && (
+          {(itemTypeId || size || category || schoolLevel) && (
             <Link href="/" className="text-sm text-neutral-600 underline">
               Clear filters
             </Link>
@@ -188,13 +212,12 @@ export default async function Page(props: PageProps<"/">) {
                         </span>
                       </summary>
                       <div className="overflow-x-auto border-t border-neutral-200">
-                        <table className="w-full min-w-[600px] text-sm">
+                        <table className="w-full min-w-[380px] text-sm">
                           <thead>
                             <tr className="border-b border-neutral-200 text-left text-neutral-600">
                               <th className="px-3 py-2 font-medium">Condition</th>
                               <th className="px-3 py-2 font-medium">Price</th>
                               <th className="px-3 py-2 font-medium">Seller</th>
-                              <th className="px-3 py-2 font-medium"></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -202,15 +225,14 @@ export default async function Page(props: PageProps<"/">) {
                               <tr key={item.id} className="border-b border-neutral-100 last:border-0">
                                 <td className="px-3 py-2">{CONDITION_LABELS[item.condition]}</td>
                                 <td className="px-3 py-2">{formatPrice(item.price) ?? "—"}</td>
-                                <td className="px-3 py-2">{item.sellerName}</td>
-                                <td className="px-3 py-2 text-right">
+                                <td className="px-3 py-2">
                                   <a
                                     href={whatsappLink(item.sellerPhone)}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="whitespace-nowrap rounded bg-brand px-2 py-1 text-xs font-medium text-white"
+                                    className="font-medium text-brand underline"
                                   >
-                                    Chat on WhatsApp
+                                    {item.sellerName}
                                   </a>
                                 </td>
                               </tr>
@@ -230,7 +252,9 @@ export default async function Page(props: PageProps<"/">) {
       <div>
         <p className="text-sm text-neutral-600">
           <span className="font-bold">A note on safety:</span> Nothing online is 100% secure, so
-          please stay vigilant when arranging any exchange. We recommend verifying that the buyer/seller is part of the 'Larries Skool/Sport Klere Koop & Verkoop' WhatsApp group.
+          please stay vigilant when arranging any exchange. We recommend verifying that the
+          buyer/seller is part of the &apos;Larries Skool/Sport Klere Koop &amp; Verkoop&apos;
+          WhatsApp group.
         </p>
         <div className="mt-2 space-y-1 text-xs text-neutral-500 italic">
           <p>

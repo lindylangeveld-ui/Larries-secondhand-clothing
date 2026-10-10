@@ -1,8 +1,11 @@
 import { query } from "@/lib/db";
 import type { Category } from "@/lib/categories";
+import type { SchoolLevel } from "@/lib/schoolLevel";
 
 export type { Category } from "@/lib/categories";
 export { CATEGORY_LABELS, CATEGORIES } from "@/lib/categories";
+export type { SchoolLevel } from "@/lib/schoolLevel";
+export { SCHOOL_LEVEL_LABELS, SCHOOL_LEVELS } from "@/lib/schoolLevel";
 
 export type Condition = "unused" | "like_new" | "fair";
 export type ItemStatus = "pending" | "approved" | "sold";
@@ -30,6 +33,7 @@ export interface Item {
   sellerPhone: string;
   condition: Condition;
   category: Category;
+  schoolLevel: SchoolLevel;
   status: ItemStatus;
   createdAt: Date;
 }
@@ -45,6 +49,7 @@ function mapItemRow(row: Record<string, unknown>): Item {
     sellerPhone: row.seller_phone as string,
     condition: row.condition as Condition,
     category: row.category as Category,
+    schoolLevel: row.school_level as SchoolLevel,
     status: row.status as ItemStatus,
     createdAt: row.created_at as Date,
   };
@@ -84,6 +89,7 @@ export async function getApprovedItems(filters: {
   itemTypeId?: string;
   size?: string;
   category?: Category;
+  schoolLevel?: SchoolLevel;
 }): Promise<Item[]> {
   const conditions = [`i.status = 'approved'`];
   const params: unknown[] = [];
@@ -100,10 +106,15 @@ export async function getApprovedItems(filters: {
     params.push(filters.category);
     conditions.push(`it.category = $${params.length}`);
   }
+  if (filters.schoolLevel) {
+    params.push(filters.schoolLevel);
+    conditions.push(`i.school_level = $${params.length}`);
+  }
 
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, it.category, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, it.category, i.school_level,
+            i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where ${conditions.join(" and ")}
@@ -116,7 +127,8 @@ export async function getApprovedItems(filters: {
 export async function getPendingItems(): Promise<Item[]> {
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, it.category, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, it.category, i.school_level,
+            i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where i.status = 'pending'
@@ -128,7 +140,8 @@ export async function getPendingItems(): Promise<Item[]> {
 export async function getItemsByPhone(phone: string): Promise<Item[]> {
   const { rows } = await query(
     `select i.id, i.item_type_id, it.name as item_type_name, i.size, i.price,
-            i.seller_name, i.seller_phone, i.condition, it.category, i.status, i.created_at
+            i.seller_name, i.seller_phone, i.condition, it.category, i.school_level,
+            i.status, i.created_at
      from items i
      join item_types it on it.id = i.item_type_id
      where i.seller_phone = $1 and i.status <> 'sold'
@@ -145,6 +158,7 @@ interface NewItem {
   sellerName: string;
   sellerPhone: string;
   condition: Condition;
+  schoolLevel: SchoolLevel;
 }
 
 export async function createItems(items: NewItem[]) {
@@ -153,9 +167,9 @@ export async function createItems(items: NewItem[]) {
   const values: string[] = [];
   const params: unknown[] = [];
   items.forEach((item, i) => {
-    const base = i * 6;
+    const base = i * 7;
     values.push(
-      `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6})`
+      `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7})`
     );
     params.push(
       item.itemTypeId,
@@ -163,12 +177,13 @@ export async function createItems(items: NewItem[]) {
       item.price,
       item.sellerName,
       item.sellerPhone,
-      item.condition
+      item.condition,
+      item.schoolLevel
     );
   });
 
   await query(
-    `insert into items (item_type_id, size, price, seller_name, seller_phone, condition)
+    `insert into items (item_type_id, size, price, seller_name, seller_phone, condition, school_level)
      values ${values.join(", ")}`,
     params
   );

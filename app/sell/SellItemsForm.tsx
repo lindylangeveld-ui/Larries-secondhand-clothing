@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { submitItems } from "./actions";
+import { SCHOOL_LEVELS, SCHOOL_LEVEL_LABELS } from "@/lib/schoolLevel";
 
 interface ItemTypeOption {
   id: string;
@@ -101,6 +102,30 @@ export default function SellItemsForm({ itemTypes }: { itemTypes: ItemTypeOption
           <p className="mt-1 text-xs text-neutral-500">
             Shown as a WhatsApp contact link for buyers to contact you.
             Also used for you to manage your own listings later.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm">
+            School level
+            <select
+              name="schoolLevel"
+              required
+              defaultValue=""
+              className="mt-1 w-full rounded border border-neutral-300 px-2 py-1.5"
+            >
+              <option value="" disabled>
+                Select a school level
+              </option>
+              {SCHOOL_LEVELS.map((level) => (
+                <option key={level} value={level}>
+                  {SCHOOL_LEVEL_LABELS[level]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="mt-1 text-xs text-neutral-500">
+            Applies to all items below. Selling for both? Submit them separately.
           </p>
         </div>
       </div>

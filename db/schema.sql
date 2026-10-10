@@ -15,6 +15,7 @@ create table if not exists item_types (
 
 create type condition as enum ('unused', 'like_new', 'fair');
 create type item_status as enum ('pending', 'approved', 'sold');
+create type school_level as enum ('primary', 'high');
 
 create table if not exists items (
   id            uuid primary key default gen_random_uuid(),
@@ -24,6 +25,7 @@ create table if not exists items (
   seller_name   text not null,
   seller_phone  text not null,
   condition     condition not null,
+  school_level  school_level not null default 'high',
   status        item_status not null default 'pending',
   created_at    timestamptz not null default now(),
   approved_at   timestamptz,

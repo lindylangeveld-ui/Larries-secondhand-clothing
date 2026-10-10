@@ -3,14 +3,17 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createItems, type Condition } from "@/lib/items";
+import { SCHOOL_LEVELS, type SchoolLevel } from "@/lib/schoolLevel";
 import { notifyAdminOfNewSubmissions } from "@/lib/email";
 import { query } from "@/lib/db";
 
 const conditionValues = ["unused", "like_new", "fair"] as const;
+const schoolLevelValues = SCHOOL_LEVELS as [SchoolLevel, ...SchoolLevel[]];
 
 const sellerSchema = z.object({
   sellerName: z.string().trim().min(1).max(100),
   sellerPhone: z.string().trim().min(6).max(20).regex(/^\d+$/),
+  schoolLevel: z.enum(schoolLevelValues),
 });
 
 const itemSchema = z.object({
@@ -29,6 +32,7 @@ export async function submitItems(formData: FormData) {
   const seller = sellerSchema.safeParse({
     sellerName: formData.get("sellerName"),
     sellerPhone: formData.get("sellerPhone"),
+    schoolLevel: formData.get("schoolLevel"),
   });
   if (!seller.success) {
     redirect("/sell?error=1");
@@ -71,7 +75,7 @@ export async function submitItems(formData: FormData) {
     redirect("/sell?error=1");
   }
 
-  const { sellerName, sellerPhone } = seller.data;
+  const { sellerName, sellerPhone, schoolLevel } = seller.data;
 
   await createItems(
     items.map((item) => ({
@@ -81,6 +85,7 @@ export async function submitItems(formData: FormData) {
       sellerName,
       sellerPhone,
       condition: item.condition as Condition,
+      schoolLevel,
     }))
   );
 
